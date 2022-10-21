@@ -1,1 +1,9 @@
 @import '~antd/dist/antd.css';
+
+body {
+  background-color: var(--background);
+}
+.container {
+  padding: 0 10px;
+}
+
