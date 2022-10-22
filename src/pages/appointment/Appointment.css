@@ -1,0 +1,36 @@
+
+.content-container {
+    /* margin: 40px 25px; */
+    width: 98%;
+    margin-left: auto;
+    margin-top: 40px;
+}
+
+.ant-input-affix-wrapper, .ant-select-selector, .ant-picker {
+    height: 40px !important;
+    border-radius: 5px !important;
+    
+}
+
+.section-title  {
+    font-size: 15px !important;
+    font-weight: 'bold';
+    margin-bottom: 15px !important;
+}
+
+
+.ant-input.message-box {
+    resize: none !important;
+}
+
+.submit-button {
+    background-color: var(--btnRed) !important;
+    border-width: 0 !important;
+    border-radius: 5px !important;
+}
+
+@media screen and (max-width: 420px) {
+    .ant-row.section-group  {
+        margin: 0px 10px !important;
+    }
+}

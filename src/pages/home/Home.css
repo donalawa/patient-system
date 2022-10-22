@@ -1,0 +1,20 @@
+.cards-container {
+    width: 90%;
+    margin: 0  auto;
+    padding-top: 20px;
+}
+
+
+.home-container {
+    width: 80%;
+    margin: 0  auto;
+}
+
+
+
+.home-title {
+    margin-bottom: 0px !important;
+    color: var(--red) !important;
+}
+
+

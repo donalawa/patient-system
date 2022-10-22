@@ -1,13 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route }  from 'react-router-dom'
-import  { Home, Patient } from './pages/index';
+import  { Home, Appointment } from './pages/index';
 import  Navbar from './components/Navbar';
 
 
 import './App.css';
 import './pages/home/Home.css';
-import './pages/patient/Patient.css';
-// import './components/Navbar/Navbar.css';
+import './pages/appointment/Appointment.css';
+import './components/Table/DataTable.css';
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
     <Router>
       <Routes>
         <Route path='/' element={<Home />}/>
-        <Route path='/patient' element={<Patient />}/>
+        <Route path='/appointment' element={<Appointment />}/>
       </Routes>
     </Router>
     </div>

@@ -1,5 +1,5 @@
 import Home from "./home/Home";
-import Patient from "./patient/Patient";
+import Appointment from "./appointment/Appointment";
 
 
-export { Home, Patient }
+export { Home, Appointment }

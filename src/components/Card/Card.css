@@ -1,0 +1,17 @@
+.card {
+    margin-bottom: 20px;
+}
+
+.card-box {
+    border-radius: 40px;
+    background-color: red;
+}
+
+.card-title {
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.ant-card-body {
+    padding: 10px  25px !important;
+}
