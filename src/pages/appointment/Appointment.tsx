@@ -1,12 +1,28 @@
 import React from 'react';
-import  { Row, Typography, Input, Col, Button, Form, Checkbox, DatePicker,  Select } from 'antd';
+import  { Row, Typography, Input, Col, Button, Form, Checkbox, DatePicker, TimePicker,  Select } from 'antd';
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import { bindActionCreators } from 'redux';
+import { useDispatch } from 'react-redux';
+import { actionCreators } from '../../state';
 
 import './Appointment.css';
+import moment from 'moment';
+import AppointmentType from '../../interfaces/AppointmentInterface';
 
 const { Title } = Typography;
 
 const Appointment: React.FC = ()  => {
+    const dispatch = useDispatch();
+
+    const { addAppointment } = bindActionCreators(actionCreators, dispatch);
+
+    const handleSubmit  = (values:  AppointmentType) => {
+        let  reqData =  {...values, appointment_time: values.appointment_time.format('LTS'),  appointment_date: values.appointment_date.format('LL'), request_date: values.request_date.format('LL')};
+        // DISPATCH NEW APPOINTMENT EVENT
+        addAppointment(reqData);
+        console.log("DONE ADDED");
+    }
+    
     return  (
         <div >
             <Row style={{ padding: '0 30px', marginTop: '20px'}}>
@@ -20,7 +36,8 @@ const Appointment: React.FC = ()  => {
             </Row>
             <hr style={{width: '3%', backgroundColor: 'var(--red)', height: '.1em', margin: '0 auto'}}/>
             <div className='content-container'>
-            <Form autoComplete='off' layout="vertical" labelCol={{span: 24}} wrapperCol={{span: 24}} onFinish={(values) => console.log("VALUES", values)}>
+        
+            <Form autoComplete='off' layout="vertical" labelCol={{span: 24}} wrapperCol={{span: 24}} onFinish={handleSubmit}>
                 <Row style={{ margin: '0 50px'}} className="section-group">
                     <Title level={5} className="section-title">General Information</Title>
                     <Row style={{ width: '100%',  justifyContent: 'space-between'}} >
@@ -77,7 +94,7 @@ const Appointment: React.FC = ()  => {
                             md={11}
                             lg={5}
                             xl={5}>
-                            <Form.Item  name="gender" label="Sex" requiredMark="optional">
+                            <Form.Item rules={[{required: true,  message: "Select Gender"}]}  name="gender" label="Sex">
                                 <Select placeholder='Select your gender' > 
                                     <Select.Option value="male">Male</Select.Option>
                                     <Select.Option value="female">Female</Select.Option>
@@ -91,7 +108,7 @@ const Appointment: React.FC = ()  => {
                             lg={5}
                             xl={5}>
                             <Form.Item  
-                            name="name" 
+                            name="phone" 
                             label="Phone"  
                             rules={[
                             {
@@ -137,7 +154,7 @@ const Appointment: React.FC = ()  => {
                             md={11}
                             lg={4}
                             xl={4}>
-                            <Form.Item  name="dob" label="Appointment Date">
+                            <Form.Item  name="appointment_date" requiredMark="optional" label="Appointment Date">
                                 <DatePicker style={{width: '100%'}} picker='date' />
                             </Form.Item>
                         </Col>
@@ -147,7 +164,7 @@ const Appointment: React.FC = ()  => {
                             md={11}
                             lg={5}
                             xl={5}>
-                            <Form.Item  name="firstTime" label="New">
+                            <Form.Item  name="first_time" rules={[{required: true, message: "Select Option"}]} label="New">
                                 <Select placeholder='First time' > 
                                     <Select.Option value="Yes">Yes</Select.Option>
                                     <Select.Option value="No">No</Select.Option>
@@ -160,7 +177,7 @@ const Appointment: React.FC = ()  => {
                             md={11}
                             lg={4}
                             xl={4}>
-                            <Form.Item  name="dob" label="Request date">
+                            <Form.Item  name="request_date" rules={[{required: true, message: "Select Date Of Request"}]} label="Request date">
                                 <DatePicker style={{width: '100%'}} picker='date' />
                             </Form.Item>
                         </Col>
@@ -170,10 +187,12 @@ const Appointment: React.FC = ()  => {
                             md={11}
                             lg={5}
                             xl={5}>
-                            <Form.Item  name="gender" label="Appointment Status">
+                            <Form.Item  name="appointment_status" rules={[{ required: true, message: "Select Status"}]} label="Appointment Status">
                                 <Select placeholder='Select your gender' > 
-                                    <Select.Option value="male">Male</Select.Option>
-                                    <Select.Option value="female">Female</Select.Option>
+                                    <Select.Option value="pending">Pending</Select.Option>
+                                    <Select.Option value="missed">Missed</Select.Option>
+                                    <Select.Option value="rescheduled">Rescheduled</Select.Option>
+                                    <Select.Option value="success">Success</Select.Option>
                                 </Select>
                             </Form.Item> 
                         </Col>
@@ -181,17 +200,12 @@ const Appointment: React.FC = ()  => {
                     
 
                         <Form.Item  
-                        name="email" 
+                        name="appointment_time" 
                         label="Appointment Time" 
-                        rules={[
-                        {
-                            type: 'email',
-                            message:  "Please enter a valid email"
-                        }
-                        ]}
+                        requiredMark="optional"
                         hasFeedback
                         >
-                            <Input placeholder='Type your email' />
+                            <TimePicker defaultOpenValue={moment('00:00:00', 'HH:mm:ss')} />
                         </Form.Item>
                     </Row>
                 </Row>
@@ -207,10 +221,13 @@ const Appointment: React.FC = ()  => {
                             lg={5}
                             xl={5}>
                             <Form.Item  
-                            name="name" 
+                            name="address" 
                             label="Address 1"  
                             rules={[
-                         
+                            {
+                                required: true,
+                                message: "Please Enter Address"
+                            },
                             {
                                 whitespace: true
                             },
@@ -218,7 +235,7 @@ const Appointment: React.FC = ()  => {
                             ]}
                             hasFeedback
                             >
-                            <Input  />
+                            <Input  placeholder='Address'/>
                             </Form.Item>
                         </Col>
                 
@@ -229,10 +246,13 @@ const Appointment: React.FC = ()  => {
                             lg={5}
                             xl={5}>
                             <Form.Item  
-                            name="name" 
+                            name="city" 
                             label="City"  
                             rules={[
-                      
+                            {
+                                required: true,
+                                message: "Select City"
+                            },
                             {
                                 whitespace: true
                             },
@@ -240,7 +260,7 @@ const Appointment: React.FC = ()  => {
                             ]}
                             hasFeedback
                             >
-                            <Input  />
+                            <Input  placeholder='City'/>
                             </Form.Item>
                         </Col>
 
@@ -258,10 +278,13 @@ const Appointment: React.FC = ()  => {
                             lg={5}
                             xl={5}>
                             <Form.Item  
-                            name="name" 
+                            name="note_before_appointment" 
                             label="Before appointment"  
                             rules={[
-                         
+                            {
+                                required:  true,
+                                message: "Enter Note"
+                            },
                             {
                                 whitespace: true
                             },
@@ -280,7 +303,7 @@ const Appointment: React.FC = ()  => {
                             lg={5}
                             xl={5}>
                             <Form.Item  
-                            name="name" 
+                            name="note_after_appointment" 
                             label="After Appointment"  
                             rules={[
                                 

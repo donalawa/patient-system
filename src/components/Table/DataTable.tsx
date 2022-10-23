@@ -2,6 +2,11 @@ import React, { useEffect,  useState } from 'react'
 import {  Table, Button  } from 'antd';
 import { EyeOutlined, PlusOutlined } from '@ant-design/icons'
 
+// type TableProps = {
+//   data: Array<Object>,
+//   loading: boolean
+// }
+
 const DataTable = () => {
     const [gridData, setGridData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -42,6 +47,19 @@ const DataTable = () => {
                 filteredValue: filteredInfo.age || null,
                 onFilter: (value: any, record: any) => String(record.age).includes(value)
             },
+            {
+              title: "Sex",
+              dataIndex: "sex",
+              editTable: true,
+              sorter:  (a: any,b: any) => a.age - b.age,
+              sortOrder: sortedInfo.columnKey === 'sex' && sortedInfo.order,
+              filters: [
+              {text: "Male",  value: "male"},
+              {text: "Female",  value: "female"},
+              ],
+              filteredValue: filteredInfo.sex || null,
+              onFilter: (value: any, record: any) => String(record.sex).includes(value)
+          },
 
             {
                 title: "Address",
@@ -70,8 +88,8 @@ const DataTable = () => {
                 {text: "missed",  value: "missed"},
                
                 ],
-                filteredValue: filteredInfo.age || null,
-                onFilter: (value: any, record: any) => String(record.age).includes(value),
+                filteredValue: filteredInfo.status || null,
+                onFilter: (value: any, record: any) => String(record.status).includes(value),
                 render:  (tag: any) => {
                   let className = tag == 'passed'  ? 'success'  : 'rescheduled';
                   if(tag == "missed") {
@@ -104,6 +122,7 @@ const DataTable = () => {
           key: '1',
           name: 'John Brown',
           age: 32,
+          sex: 'male',
           address: 'New York No. 1 Lake Park',
           code: "A109434",
           phone: "676342323",
@@ -113,6 +132,7 @@ const DataTable = () => {
           key: '2',
           name: 'Jim Green',
           age: 42,
+          sex: 'female',
           address: 'London No. 1 Lake Park',
           code: "A109434",
           phone: "676342323",
@@ -122,6 +142,7 @@ const DataTable = () => {
           key: '3',
           name: 'Joe Black',
           age: 32,
+          sex: 'male',
           address: 'Sidney No. 1 Lake Park',
           code: "A109434",
           phone: "676342323",
@@ -131,6 +152,7 @@ const DataTable = () => {
           key: '4',
           name: 'Jim Red',
           age: 32,
+          sex: 'male',
           address: 'London No. 2 Lake Park',
           code: "A109434",
           phone: "676342323",

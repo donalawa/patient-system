@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import  { Row, Typography, Input, Col } from 'antd';
 import { SearchOutlined } from "@ant-design/icons";
+import { bindActionCreators, combineReducers } from 'redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { actionCreators,  State } from '../../state';
 
 import './Home.css';
 
@@ -10,6 +13,19 @@ import DataTable from '../../components/Table/DataTable';
 const { Title } = Typography;
 
 const Home: React.FC = ()  => {
+    const dispatch = useDispatch();
+    const stateData:any = useSelector((state: State) => state.appointmentList);
+
+    let data = stateData.appointments.docs;
+    let loading = stateData.loading;
+
+    // console.log("Data", data);
+    // console.log(stateData.loading)
+    const { getAppointments, addAppointment} = bindActionCreators(actionCreators, dispatch)
+
+    useEffect(()  => {
+        getAppointments();
+    }, [])
     return  (
         <div className='home-container'>
             <div className='cards-container'>
@@ -47,7 +63,7 @@ const Home: React.FC = ()  => {
                 </Row>
             </div>
             <div>
-                <DataTable  />
+                <DataTable />
             </div>
         </div>
     )
