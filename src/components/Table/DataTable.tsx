@@ -183,6 +183,8 @@ const DataTable = () => {
         // loadData();
       }
 
+      
+
       const handleInputChange = (e: any) => {
         setSearchText(e.target.value);
         if(e.targe.value == "") {
