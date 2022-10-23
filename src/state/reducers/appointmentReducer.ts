@@ -1,7 +1,7 @@
 import { ActionTypes } from "../types/actionTypes";
 import { AppointmentActionTypes, AppointmentListActionTypes } from '../types/appointmentTypes';
 
-const initialState = { appointments: [], loading: false };
+const initialState = { appointments: [], loading: false, formMode: 'new' };
 
 export const appointmentListReducer =  (
     state = initialState,
@@ -39,16 +39,29 @@ export const appointmentReducer =  (
                 loading: false,
                 appointments: [...state.appointments, action.payload]
             }
+        case ActionTypes.RESET_TABLE_MODE:
+            return {
+                ...state,
+                loading: false,
+                formMode: 'new'
+            }
+        case ActionTypes.APPOINTMENT_READ_MODE:
+            return {
+                ...state,
+                loading: false,
+                formMode: 'view'
+            }
         case ActionTypes.GET_APPOINTMENT_REQUEST:
             return {
                 ...state,
-                loading: true
+                loading: true,
             }
         case ActionTypes.GET_APPOINTMENT:
             return {
                 ...state,
                 appointment: action.payload,
-                loading: false
+                loading: false,
+                formMode: 'view'
             }
         default:
             return state;

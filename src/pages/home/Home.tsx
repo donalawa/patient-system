@@ -1,29 +1,24 @@
 import React, { useEffect } from 'react';
 import  { Row, Typography, Input, Col, Button } from 'antd';
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import { useNavigate } from 'react-router-dom';
+
 
 
 import './Home.css';
 import HomeCard from '../../components/Card/Card';
 import DataTable from '../../components/Table/DataTable';
+import ButtonAdd from '../../components/ButtonAdd/ButtonAdd';
 
 const { Title } = Typography;
 
 const Home: React.FC = ()  => {
-    const navigate = useNavigate();
-
+    
+    
     return  (
         <div className='home-container'>
             <div className='cards-container'>
                 <Row style={{ justifyContent: 'space-between',  alignItems: 'end', marginBottom: '30px'}}>
-                <Col
-                    xs={24}
-                    sm={24}
-                    md={12}
-                    lg={6}
-                    xl={6}
-                    >
+                <Col xs={24} sm={24} md={12} lg={6} xl={6} >
                     <Title level={4} className="home-title">Appointments</Title>
                     <hr className='hr'/>
                     </Col>
@@ -33,7 +28,6 @@ const Home: React.FC = ()  => {
                     md={12}
                     lg={5}
                     xl={5}
-                
                     >
                     <Input
                         className="home-search"
@@ -51,9 +45,7 @@ const Home: React.FC = ()  => {
             <div>
                 <DataTable />
             </div>
-            <Button className='btn-add'>
-              <PlusOutlined />
-            </Button>
+            <ButtonAdd />
         </div>
     )
 }

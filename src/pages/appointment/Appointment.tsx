@@ -1,20 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import  { Row, Typography, Input, Col, Button, Form, Checkbox, DatePicker, TimePicker,  Select } from 'antd';
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { bindActionCreators } from 'redux';
-import { useDispatch } from 'react-redux';
-import { actionCreators } from '../../state';
+import { useDispatch, useSelector } from 'react-redux';
+import { actionCreators, State } from '../../state';
 
 import './Appointment.css';
 import moment from 'moment';
 import AppointmentType from '../../interfaces/AppointmentInterface';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const { Title } = Typography;
 
-const Appointment: React.FC = ()  => {
-    const dispatch = useDispatch();
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
 
-    const { addAppointment } = bindActionCreators(actionCreators, dispatch);
+const Appointment: React.FC = ()  => {
+    // const [appointmentData, setAppointmentData] = useState<AppointmentType>(); 
+    const [updateData, setUpdateData] = useState(false);
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [form] = Form.useForm();
+    let appointmentState: any =  useSelector((state: State) => state.appointment)
+    const { addAppointment, appointmentReadMode, getSingleAppointment, resetAppointmentTableMode } = bindActionCreators(actionCreators, dispatch);
+    let appointmentData: AppointmentType = appointmentState.appointment ? appointmentState.appointment.appointment.doc : null;
+
+
+    let isViewing = appointmentState.formMode == 'view' ? true : false;
+    
+
+    let query = useQuery();
+
+  
+    // console.log("QUERY", query.get('id'));
+
 
     const handleSubmit  = (values:  AppointmentType) => {
         let  reqData =  {...values, appointment_time: values.appointment_time.format('LTS'),  appointment_date: values.appointment_date.format('LL'), request_date: values.request_date.format('LL')};
@@ -22,12 +43,63 @@ const Appointment: React.FC = ()  => {
         addAppointment(reqData);
         console.log("DONE ADDED");
     }
-    
+
+    console.log(appointmentState);
+    // if(appointmentData) {
+    //     form.setFieldsValue({
+    //         uniqueCode: appointmentData?.uniqueCode,
+    //         name: appointmentData?.name
+    //     })
+    // }
+    const handleBack = () => {
+        resetAppointmentTableMode();
+        navigate('/')
+    };
+
+    useEffect(() => {
+        let id = query.get('id')
+        if(id != null) {
+            if(!appointmentData) {
+                appointmentReadMode();
+                getSingleAppointment(id);
+            }
+            
+            // if(appointmentState.appointment) {
+            //     console.log('ok')
+            //     setAppointmentData(appointmentState.appointment.appointment.doc);
+            // }
+            console.log("UPDATE DATA:", appointmentData);
+            if(appointmentData !=  null) {
+                form.setFieldsValue({
+                    uniqueCode: appointmentData.uniqueCode,
+                    name: appointmentData.name,
+                    gender: appointmentData.gender,
+                    phone: appointmentData.phone,
+                    email: appointmentData.email,
+                    age: appointmentData.age,
+                    appointment_date: moment(appointmentData.appointment_date),
+                    first_time:  appointmentData.first_time,
+                    request_date: moment(appointmentData.request_date),
+                    appointment_status: appointmentData.appointment_status,
+                    appointment_time: moment(appointmentData.appointment_time,  'LLT'),
+                    address:  appointmentData.address,
+                    city: appointmentData.city,
+                    note_before_appointment:  appointmentData.note_before_appointment,
+                    note_after_appointment: appointmentData.note_after_appointment
+                })
+            }
+        }else {
+            console.log("NOT VIEWING")
+            isViewing = false;
+            console.log(isViewing)
+        }
+     
+    },[appointmentData])
     return  (
         <div >
             <Row style={{ padding: '0 30px', marginTop: '20px'}}>
                 <Col>
-                    <ArrowLeftOutlined style={{ fontSize: '20px'}}/>
+                    <ArrowLeftOutlined onClick={handleBack} style={{ fontSize: '20px'}}/>
                 </Col>
                 <Col style={{ marginLeft: '30px'}}>
                     <Title level={5} style={{ fontWeight: 'bold'}}>NEW RECORD</Title>
@@ -37,15 +109,11 @@ const Appointment: React.FC = ()  => {
             <hr style={{width: '3%', backgroundColor: 'var(--red)', height: '.1em', margin: '0 auto'}}/>
             <div className='content-container'>
         
-            <Form autoComplete='off' layout="vertical" labelCol={{span: 24}} wrapperCol={{span: 24}} onFinish={handleSubmit}>
+            <Form autoComplete='off' layout="vertical" form={form} labelCol={{span: 24}} wrapperCol={{span: 24}} onFinish={handleSubmit}>
                 <Row style={{ margin: '0 50px'}} className="section-group">
                     <Title level={5} className="section-title">General Information</Title>
                     <Row style={{ width: '100%',  justifyContent: 'space-between'}} >
-                        <Col xs={24}
-                            sm={24}
-                            md={11}
-                            lg={4}
-                            xl={3}>
+                        <Col xs={24} sm={24} md={11} lg={4} xl={3}>
                             <Form.Item  
                             name="uniqueCode" 
                             label="Unique Code"  
@@ -61,15 +129,11 @@ const Appointment: React.FC = ()  => {
                             ]}
                             hasFeedback
                             >
-                            <Input  />
+                            <Input disabled={isViewing} />
                             </Form.Item>
                         </Col>
 
-                        <Col xs={24}
-                            sm={24}
-                            md={11}
-                            lg={5}
-                            xl={5}>
+                        <Col xs={24} sm={24} md={11} lg={5} xl={5}>
                             <Form.Item  
                             name="name" 
                             label="Name"  
@@ -85,28 +149,20 @@ const Appointment: React.FC = ()  => {
                             ]}
                             hasFeedback
                             >
-                            <Input  />
+                            <Input disabled={isViewing} />
                             </Form.Item>
                         </Col>
                         
-                        <Col xs={24}
-                            sm={24}
-                            md={11}
-                            lg={5}
-                            xl={5}>
+                        <Col xs={24} sm={24} md={11} lg={5} xl={5}>
                             <Form.Item rules={[{required: true,  message: "Select Gender"}]}  name="gender" label="Sex">
-                                <Select placeholder='Select your gender' > 
+                                <Select placeholder='Select your gender' disabled={isViewing}> 
                                     <Select.Option value="male">Male</Select.Option>
                                     <Select.Option value="female">Female</Select.Option>
                                 </Select>
                             </Form.Item> 
                         </Col>
 
-                        <Col xs={24}
-                            sm={24}
-                            md={11}
-                            lg={5}
-                            xl={5}>
+                        <Col xs={24} sm={24} md={11} lg={4} xl={4}>
                             <Form.Item  
                             name="phone" 
                             label="Phone"  
@@ -122,10 +178,10 @@ const Appointment: React.FC = ()  => {
                             ]}
                             hasFeedback
                             >
-                            <Input  />
+                            <Input disabled={isViewing} />
                             </Form.Item>
                         </Col>
-
+                        <Col xs={24} sm={24} md={11} lg={4} xl={4}>
                         <Form.Item  
                         name="email" 
                         label="Email" 
@@ -141,54 +197,58 @@ const Appointment: React.FC = ()  => {
                         ]}
                         hasFeedback
                         >
-                            <Input placeholder='Type your email' />
+                            <Input disabled={isViewing} placeholder='Type your email' />
                         </Form.Item>
+                        </Col>
+                        <Col xs={24} sm={24} md={11} lg={2} xl={2}>
+                        <Form.Item  
+                        name="age" 
+                        label="Age" 
+                        rules={[
+                        {
+                            required: true,
+                            message: "Please enter  your age"
+                        },
+                        {
+                            type: 'string',
+                            message:  "Please enter a valid age"
+                        }
+                        ]}
+                        hasFeedback
+                        >
+                            <Input disabled={isViewing} placeholder='Age' />
+                        </Form.Item>
+                        </Col>
                     </Row>
                 </Row>
                 <hr style={{ width: '94%', marginBottom:  '40px', marginTop: '20px'}}/>
                 <Row style={{ margin: '0 50px'}} className="section-group" >
                     <Title level={5} className="section-title">Appointment Information</Title>
                     <Row style={{ width: '100%',  justifyContent: 'space-between'}} >
-                        <Col xs={24}
-                            sm={24}
-                            md={11}
-                            lg={4}
-                            xl={4}>
+                        <Col xs={24} sm={24} md={11} lg={4} xl={4}>
                             <Form.Item  name="appointment_date" requiredMark="optional" label="Appointment Date">
-                                <DatePicker style={{width: '100%'}} picker='date' />
+                                <DatePicker disabled={isViewing} style={{width: '100%'}} picker='date' />
                             </Form.Item>
                         </Col>
 
-                        <Col xs={24}
-                            sm={24}
-                            md={11}
-                            lg={5}
-                            xl={5}>
+                        <Col xs={24} sm={24} md={11} lg={5} xl={5}>
                             <Form.Item  name="first_time" rules={[{required: true, message: "Select Option"}]} label="New">
-                                <Select placeholder='First time' > 
+                                <Select disabled={isViewing} placeholder='First time' > 
                                     <Select.Option value="Yes">Yes</Select.Option>
                                     <Select.Option value="No">No</Select.Option>
                                 </Select>
                             </Form.Item> 
                         </Col>
 
-                        <Col xs={24}
-                            sm={24}
-                            md={11}
-                            lg={4}
-                            xl={4}>
+                        <Col xs={24} sm={24} md={11} lg={4} xl={4}>
                             <Form.Item  name="request_date" rules={[{required: true, message: "Select Date Of Request"}]} label="Request date">
-                                <DatePicker style={{width: '100%'}} picker='date' />
+                                <DatePicker disabled={isViewing} style={{width: '100%'}} picker='date' />
                             </Form.Item>
                         </Col>
                             
-                        <Col xs={24}
-                            sm={24}
-                            md={11}
-                            lg={5}
-                            xl={5}>
+                        <Col xs={24} sm={24} md={11} lg={5} xl={5}>
                             <Form.Item  name="appointment_status" rules={[{ required: true, message: "Select Status"}]} label="Appointment Status">
-                                <Select placeholder='Select your gender' > 
+                                <Select disabled={isViewing} placeholder='Select your gender' > 
                                     <Select.Option value="pending">Pending</Select.Option>
                                     <Select.Option value="missed">Missed</Select.Option>
                                     <Select.Option value="rescheduled">Rescheduled</Select.Option>
@@ -205,7 +265,7 @@ const Appointment: React.FC = ()  => {
                         requiredMark="optional"
                         hasFeedback
                         >
-                            <TimePicker defaultOpenValue={moment('00:00:00', 'HH:mm:ss')} />
+                            <TimePicker disabled={isViewing} defaultOpenValue={moment('00:00:00', 'HH:mm:ss')} />
                         </Form.Item>
                     </Row>
                 </Row>
@@ -215,11 +275,7 @@ const Appointment: React.FC = ()  => {
                     <Row style={{ width: '100%', columnGap: '20px'}} >
                     
 
-                        <Col xs={24}
-                            sm={24}
-                            md={11}
-                            lg={5}
-                            xl={5}>
+                        <Col xs={24} sm={24} md={11} lg={5} xl={5}>
                             <Form.Item  
                             name="address" 
                             label="Address 1"  
@@ -235,16 +291,12 @@ const Appointment: React.FC = ()  => {
                             ]}
                             hasFeedback
                             >
-                            <Input  placeholder='Address'/>
+                            <Input disabled={isViewing}  placeholder='Address'/>
                             </Form.Item>
                         </Col>
                 
 
-                        <Col xs={24}
-                            sm={24}
-                            md={11}
-                            lg={5}
-                            xl={5}>
+                        <Col xs={24} sm={24} md={11} lg={5} xl={5}>
                             <Form.Item  
                             name="city" 
                             label="City"  
@@ -260,7 +312,7 @@ const Appointment: React.FC = ()  => {
                             ]}
                             hasFeedback
                             >
-                            <Input  placeholder='City'/>
+                            <Input disabled={isViewing}  placeholder='City'/>
                             </Form.Item>
                         </Col>
 
@@ -272,11 +324,7 @@ const Appointment: React.FC = ()  => {
                     <Row style={{ width: '100%', columnGap: '40px'}} >
                     
 
-                        <Col xs={24}
-                            sm={24}
-                            md={11}
-                            lg={5}
-                            xl={5}>
+                        <Col xs={24} sm={24} md={11} lg={5} xl={5}>
                             <Form.Item  
                             name="note_before_appointment" 
                             label="Before appointment"  
@@ -292,16 +340,12 @@ const Appointment: React.FC = ()  => {
                             ]}
                             hasFeedback
                             >
-                            <Input.TextArea className='message-box' rows={4} />
+                            <Input.TextArea disabled={isViewing}  className='message-box' rows={4} />
                             </Form.Item>
                         </Col>
                 
 
-                        <Col xs={24}
-                            sm={24}
-                            md={11}
-                            lg={5}
-                            xl={5}>
+                        <Col xs={24} sm={24} md={11} lg={5} xl={5}>
                             <Form.Item  
                             name="note_after_appointment" 
                             label="After Appointment"  
@@ -314,7 +358,7 @@ const Appointment: React.FC = ()  => {
                             ]}
                             hasFeedback
                             >
-                            <Input.TextArea className='message-box' rows={4}   />
+                            <Input.TextArea disabled={isViewing} className='message-box' rows={4}   />
                             </Form.Item>
                         </Col>
 
@@ -323,16 +367,15 @@ const Appointment: React.FC = ()  => {
 
                 <Row style={{ margin: '15px 50px', }}>
                     <Row style={{ width: '100%', justifyContent: 'end'}} >
-                    <Col xs={24}
-                            sm={24}
-                            md={4}
-                            lg={2}
-                            xl={2}>
+                    <Col xs={24} sm={24} md={4} lg={2} xl={2}>
                             
                             <Form.Item wrapperCol={{span: 20}}>
-                                <Button type='primary' className='submit-button' block htmlType='submit'>
+                               {!isViewing ? <Button type='primary' className='submit-button' block htmlType='submit'>
                                 Save
-                                </Button>
+                                </Button> :
+                                <Button type='primary' className='submit-button' block htmlType='submit'>
+                                Edit
+                                </Button>}
                             </Form.Item>
                             </Col>
                     </Row>

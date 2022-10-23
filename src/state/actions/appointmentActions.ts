@@ -39,3 +39,30 @@ export const addAppointment = (appointment: Appointment): AppThunk =>  async (di
         console.log(error);
     }
 }
+
+// GET SINGLE APPOINTMENT
+
+export const getSingleAppointment = (id: string): AppThunk => async(dispatch) => {
+    dispatch({ type: ActionTypes.GET_APPOINTMENT_REQUEST});
+
+    try {
+        const res = await api.get(`/appointment/${id}`);
+
+        dispatch({
+            type: ActionTypes.GET_APPOINTMENT,
+            payload: {
+                appointment: res.data
+            }
+        })
+    } catch (error) {
+        console.log("Error Getting Appointment")
+    }
+}
+
+export const appointmentReadMode = ():AppThunk => (dispatch) => {
+    dispatch({type: ActionTypes.APPOINTMENT_READ_MODE});
+}   
+
+export const resetAppointmentTableMode = ():AppThunk => (dispatch) => {
+    dispatch({type: ActionTypes.RESET_TABLE_MODE});
+}

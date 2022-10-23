@@ -8,6 +8,7 @@ import './App.css';
 import './pages/home/Home.css';
 import './pages/appointment/Appointment.css';
 import './components/Table/DataTable.css';
+import './components/ButtonAdd/ButtonAdd.css';
 
 function App() {
   return (

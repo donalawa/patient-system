@@ -1,10 +1,12 @@
 export default interface Appointment {
     id: string,
+    uniqueCode: string,
     name: string,
     gender: string,
     phone: string,
     email:  string,
     address: string,
+    age: string,
     city: string,
     first_time: string,
     request_date: any,

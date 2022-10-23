@@ -42,6 +42,14 @@ interface  AddAppointmentAction {
     payload: Appointment
 }
 
+interface AppointmentReadModeAction {
+    type: typeof ActionTypes.APPOINTMENT_READ_MODE
+}
+
+interface ResetAppointmentTableAction {
+    type: typeof ActionTypes.RESET_TABLE_MODE
+}
+
 interface AppointmentRequestAction {
     type: typeof ActionTypes.GET_APPOINTMENT_REQUEST
 }
@@ -52,4 +60,4 @@ interface AppointmentGetAction {
 }
 
 
-export type AppointmentActionTypes = AppointmentRequestAction | AppointmentGetAction | AddAppointmentAction | AddAppointmentRequestAction;
+export type AppointmentActionTypes = AppointmentRequestAction | AppointmentGetAction | AddAppointmentAction | AddAppointmentRequestAction | AppointmentReadModeAction | ResetAppointmentTableAction;

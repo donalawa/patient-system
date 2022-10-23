@@ -3,7 +3,10 @@ import {  Table  } from 'antd';
 import { EyeOutlined } from '@ant-design/icons'
 import { bindActionCreators, combineReducers } from 'redux';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom'
 import { actionCreators,  State } from '../../state';
+import Appointment from '../../interfaces/AppointmentInterface';
+
 
 // type TableProps = {
 //   data: Array<Object>,
@@ -18,9 +21,10 @@ const DataTable = () => {
     const [filteredInfo,  setFilteredInfo] = useState<any>({});
     let [filteredData]: any = useState();
     // GETING DATA FORMSTATE
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const stateData:any = useSelector((state: State) => state.appointmentList);
-    const { getAppointments, addAppointment} = bindActionCreators(actionCreators, dispatch)
+    const { getAppointments, appointmentReadMode} = bindActionCreators(actionCreators, dispatch)
 
     let data = stateData.appointments.docs;
     let loading = stateData.loading;
@@ -31,8 +35,15 @@ const DataTable = () => {
 
       // setGridData(data);
     }
-    
+    let appointmentState =  useSelector((state: State) => state.appointment)
+    const handleView = (id: string) => {
+      console.log("ID: ", id);
+      appointmentReadMode();
+      navigate(`/appointment?id=${id}`);
+    //  console.log("NEW STATE", appointmentState)
+    }
 
+    // handleView();
     const columns = [
         {
             title: "Name",
@@ -69,14 +80,14 @@ const DataTable = () => {
               title: "Sex",
               dataIndex: "gender",
               editTable: true,
-              sorter:  (a: any,b: any) => a.age - b.age,
+              sorter:  (a: any,b: any) => a.gender - b.gender,
               sortOrder: sortedInfo.columnKey === 'gender' && sortedInfo.order,
               filters: [
               {text: "Male",  value: "male"},
               {text: "Female",  value: "female"},
               ],
-              filteredValue: filteredInfo.sex || null,
-              onFilter: (value: any, record: any) => String(record.sex).includes(value)
+              filteredValue: filteredInfo.gender || null,
+              onFilter: (value: any, record: any) => String(record.gender).includes(value)
           },
 
             {
@@ -112,7 +123,7 @@ const DataTable = () => {
                 title: "Status",
                 dataIndex: "appointment_status",
                 editTable: true,
-                sorter:  (a: any,b: any) => a.age - b.age,
+                sorter:  (a: any,b: any) => a.status - b.status,
                 sortOrder: sortedInfo.columnKey === 'appointment_status' && sortedInfo.order,
                 filters: [
                 {text: "passed",  value: "passed"},
@@ -123,7 +134,7 @@ const DataTable = () => {
                 filteredValue: filteredInfo.status || null,
                 onFilter: (value: any, record: any) => String(record.status).includes(value),
                 render:  (tag: any) => {
-                  let className = tag == 'passed'  ? 'success'  : 'rescheduled';
+                  let className = tag == 'success'  ? 'success'  : 'rescheduled';
                   if(tag == "missed") {
                     className = 'missed';
                   }
@@ -139,10 +150,10 @@ const DataTable = () => {
                 title: "Action",
                 align: 'center' as  'center',
                 dataIndex: "action",
-                render: () =>  {
+                render: (_:any, record: Appointment) =>  {
 
                   return   (
-                        <EyeOutlined onClick={(e) => console.log('CLICKED')}/>
+                        <EyeOutlined onClick={() => handleView(record.id)}/>
                   )
                 }
             },
@@ -195,6 +206,7 @@ const DataTable = () => {
 
       const handleChange  = (_:any, filter: any, sorter: any)   => {
         console.log("Sorter", sorter);
+        console.log(filter)
         const  {order, field} = sorter;
         setFilteredInfo(filter);
         setSortedInfo({columnKey: field, order })
@@ -239,7 +251,7 @@ const DataTable = () => {
     return (
         <>
             <div className='table-container'>
-              <Table rowClassName="table-row" rowKey="id" columns={columns} loading={loading} dataSource={data} onChange={handleChange} />
+              <Table rowClassName="table-row" rowKey="id" columns={columns} loading={loading} dataSource={filteredData && filteredData.length ? filteredData : data} onChange={handleChange} />
             </div>
           
         </>
