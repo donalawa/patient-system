@@ -1,31 +1,18 @@
 import React, { useEffect } from 'react';
-import  { Row, Typography, Input, Col } from 'antd';
-import { SearchOutlined } from "@ant-design/icons";
-import { bindActionCreators, combineReducers } from 'redux';
-import { useSelector, useDispatch } from 'react-redux';
-import { actionCreators,  State } from '../../state';
+import  { Row, Typography, Input, Col, Button } from 'antd';
+import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
+import { useNavigate } from 'react-router-dom';
+
 
 import './Home.css';
-
 import HomeCard from '../../components/Card/Card';
 import DataTable from '../../components/Table/DataTable';
 
 const { Title } = Typography;
 
 const Home: React.FC = ()  => {
-    const dispatch = useDispatch();
-    const stateData:any = useSelector((state: State) => state.appointmentList);
+    const navigate = useNavigate();
 
-    let data = stateData.appointments.docs;
-    let loading = stateData.loading;
-
-    // console.log("Data", data);
-    // console.log(stateData.loading)
-    const { getAppointments, addAppointment} = bindActionCreators(actionCreators, dispatch)
-
-    useEffect(()  => {
-        getAppointments();
-    }, [])
     return  (
         <div className='home-container'>
             <div className='cards-container'>
@@ -36,10 +23,9 @@ const Home: React.FC = ()  => {
                     md={12}
                     lg={6}
                     xl={6}
-                    // style={{ backgroundColor: 'black'}}
                     >
                     <Title level={4} className="home-title">Appointments</Title>
-                    <hr style={{width: '20%', backgroundColor: 'var(--red)', height: '.1em', margin: '0 auto',  position: 'relative', right:  68}}/>
+                    <hr className='hr'/>
                     </Col>
                     <Col
                     xs={24}
@@ -65,6 +51,9 @@ const Home: React.FC = ()  => {
             <div>
                 <DataTable />
             </div>
+            <Button className='btn-add'>
+              <PlusOutlined />
+            </Button>
         </div>
     )
 }

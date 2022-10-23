@@ -1,6 +1,9 @@
 import React, { useEffect,  useState } from 'react'
-import {  Table, Button  } from 'antd';
-import { EyeOutlined, PlusOutlined } from '@ant-design/icons'
+import {  Table  } from 'antd';
+import { EyeOutlined } from '@ant-design/icons'
+import { bindActionCreators, combineReducers } from 'redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { actionCreators,  State } from '../../state';
 
 // type TableProps = {
 //   data: Array<Object>,
@@ -8,12 +11,27 @@ import { EyeOutlined, PlusOutlined } from '@ant-design/icons'
 // }
 
 const DataTable = () => {
-    const [gridData, setGridData] = useState([]);
-    const [loading, setLoading] = useState(false);
+    // const [gridData, setGridData] = useState([]);
+    // const [loading, setLoading] = useState(false);
     const [sortedInfo, setSortedInfo] = useState<any>({});
     const [searchText,  setSearchText] = useState("");
     const [filteredInfo,  setFilteredInfo] = useState<any>({});
     let [filteredData]: any = useState();
+    // GETING DATA FORMSTATE
+    const dispatch = useDispatch();
+    const stateData:any = useSelector((state: State) => state.appointmentList);
+    const { getAppointments, addAppointment} = bindActionCreators(actionCreators, dispatch)
+
+    let data = stateData.appointments.docs;
+    let loading = stateData.loading;
+
+    if(loading == false) {
+      console.log("UPDATE STATE")
+      console.log(data)
+
+      // setGridData(data);
+    }
+    
 
     const columns = [
         {
@@ -25,10 +43,10 @@ const DataTable = () => {
           },
           {
             title: "Code",
-            dataIndex: "code",
+            dataIndex: "uniqueCode",
             editTable: true,
             sorter:  (a: any,b: any) => a.code.length - b.code.length,
-            sortOrder: sortedInfo.columnKey === 'code' && sortedInfo.order,
+            sortOrder: sortedInfo.columnKey === 'uniqueCode' && sortedInfo.order,
           },
             {
                 title: "Age",
@@ -49,10 +67,10 @@ const DataTable = () => {
             },
             {
               title: "Sex",
-              dataIndex: "sex",
+              dataIndex: "gender",
               editTable: true,
               sorter:  (a: any,b: any) => a.age - b.age,
-              sortOrder: sortedInfo.columnKey === 'sex' && sortedInfo.order,
+              sortOrder: sortedInfo.columnKey === 'gender' && sortedInfo.order,
               filters: [
               {text: "Male",  value: "male"},
               {text: "Female",  value: "female"},
@@ -77,11 +95,25 @@ const DataTable = () => {
                 sortOrder: sortedInfo.columnKey === 'phone' && sortedInfo.order,
               },
               {
+                title: "Date Created",
+                dataIndex: "request_date",
+                editTable: true,
+                sorter:  (a: any,b: any) => a.phone.length - b.phone.length,
+                sortOrder: sortedInfo.columnKey === 'request_date' && sortedInfo.order,
+              },
+              {
+                title: "Appointment Date",
+                dataIndex: "appointment_date",
+                editTable: true,
+                sorter:  (a: any,b: any) => a.phone.length - b.phone.length,
+                sortOrder: sortedInfo.columnKey === 'request_date' && sortedInfo.order,
+              },
+              {
                 title: "Status",
-                dataIndex: "status",
+                dataIndex: "appointment_status",
                 editTable: true,
                 sorter:  (a: any,b: any) => a.age - b.age,
-                sortOrder: sortedInfo.columnKey === 'status' && sortedInfo.order,
+                sortOrder: sortedInfo.columnKey === 'appointment_status' && sortedInfo.order,
                 filters: [
                 {text: "passed",  value: "passed"},
                 {text: "rescheduled",  value: "rescheduled"},
@@ -117,48 +149,48 @@ const DataTable = () => {
        
       ];
      
-      const data:any = [
-        {
-          key: '1',
-          name: 'John Brown',
-          age: 32,
-          sex: 'male',
-          address: 'New York No. 1 Lake Park',
-          code: "A109434",
-          phone: "676342323",
-          status: "passed",
-        },
-        {
-          key: '2',
-          name: 'Jim Green',
-          age: 42,
-          sex: 'female',
-          address: 'London No. 1 Lake Park',
-          code: "A109434",
-          phone: "676342323",
-          status: "missed",
-        },
-        {
-          key: '3',
-          name: 'Joe Black',
-          age: 32,
-          sex: 'male',
-          address: 'Sidney No. 1 Lake Park',
-          code: "A109434",
-          phone: "676342323",
-          status: "rescheduled",
-        },
-        {
-          key: '4',
-          name: 'Jim Red',
-          age: 32,
-          sex: 'male',
-          address: 'London No. 2 Lake Park',
-          code: "A109434",
-          phone: "676342323",
-          status: "passed",
-        },
-      ];
+      // const data:any = [
+      //   {
+      //     key: '1',
+      //     name: 'John Brown',
+      //     age: 32,
+      //     sex: 'male',
+      //     address: 'New York No. 1 Lake Park',
+      //     code: "A109434",
+      //     phone: "676342323",
+      //     status: "passed",
+      //   },
+      //   {
+      //     key: '2',
+      //     name: 'Jim Green',
+      //     age: 42,
+      //     sex: 'female',
+      //     address: 'London No. 1 Lake Park',
+      //     code: "A109434",
+      //     phone: "676342323",
+      //     status: "missed",
+      //   },
+      //   {
+      //     key: '3',
+      //     name: 'Joe Black',
+      //     age: 32,
+      //     sex: 'male',
+      //     address: 'Sidney No. 1 Lake Park',
+      //     code: "A109434",
+      //     phone: "676342323",
+      //     status: "rescheduled",
+      //   },
+      //   {
+      //     key: '4',
+      //     name: 'Jim Red',
+      //     age: 32,
+      //     sex: 'male',
+      //     address: 'London No. 2 Lake Park',
+      //     code: "A109434",
+      //     phone: "676342323",
+      //     status: "passed",
+      //   },
+      // ];
 
 
       const handleChange  = (_:any, filter: any, sorter: any)   => {
@@ -168,13 +200,6 @@ const DataTable = () => {
         setSortedInfo({columnKey: field, order })
       }
 
-      const  loadData  = async () => {
-        setLoading(true);
-        // const response  = await axios.get('https://jsonplaceholder.typicode.com/comments');
-        // setGridData(response.data);
-        setGridData(data);
-        setLoading(false);
-      }
       
 
       const reset = () => {
@@ -195,23 +220,28 @@ const DataTable = () => {
         }
       }
 
-      const globalSearch =  () => {
-        filteredData = gridData.filter((value: any) => {
-          return (
-            value.name.toLowerCase().includes(searchText.toLowerCase()) || 
-            value.email.toLowerCase().includes(searchText.toLowerCase())
-          )
-        });
-        setGridData(filteredData);
+      // const globalSearch =  () => {
+      //   filteredData = gridData.filter((value: any) => {
+      //     return (
+      //       value.name.toLowerCase().includes(searchText.toLowerCase()) || 
+      //       value.email.toLowerCase().includes(searchText.toLowerCase())
+      //     )
+      //   });
+      //   setGridData(filteredData);
     
-      }
+      // }
+
+
+      useEffect(()  => {
+          getAppointments();
+      }, [])
 
     return (
         <>
-            <Table rowClassName="table-row" columns={columns} dataSource={data} onChange={handleChange} />
-            <Button className='btn-add'>
-              <PlusOutlined />
-            </Button>
+            <div className='table-container'>
+              <Table rowClassName="table-row" rowKey="id" columns={columns} loading={loading} dataSource={data} onChange={handleChange} />
+            </div>
+          
         </>
     )
 }

@@ -17,4 +17,23 @@
     color: var(--red) !important;
 }
 
+.hr{
+    width: 20%;
+    background-color: var(--red);
+    height: .1em;
+    margin: 0 auto;
+    position: relative;
+    right:  68px;
+}
 
+
+@media screen and (max-width: 764px) {
+    .home-title {
+        text-align: center;
+        padding-bottom: 5px;
+    }
+    .hr {
+        margin-bottom: 10px;
+        right: 0px;
+    }
+}
