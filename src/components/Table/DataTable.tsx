@@ -175,6 +175,7 @@ const DataTable = () => {
         setGridData(data);
         setLoading(false);
       }
+      
 
       const reset = () => {
         setSortedInfo({});
@@ -183,7 +184,7 @@ const DataTable = () => {
         // loadData();
       }
 
-      
+
 
       const handleInputChange = (e: any) => {
         setSearchText(e.target.value);
