@@ -4,6 +4,7 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import { bindActionCreators } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { actionCreators, State } from '../../state';
+import toast, { Toaster } from 'react-hot-toast';
 
 import './Appointment.css';
 import moment from 'moment';
@@ -18,13 +19,11 @@ function useQuery() {
 
 const Appointment: React.FC = ()  => {
     // const [appointmentData, setAppointmentData] = useState<AppointmentType>(); 
-    const [updateData, setUpdateData] = useState(false);
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [form] = Form.useForm();
     let appointmentState: any =  useSelector((state: State) => state.appointment)
-    const { addAppointment, appointmentReadMode, getSingleAppointment, resetAppointmentTableMode } = bindActionCreators(actionCreators, dispatch);
+    const { addAppointment, updateAppointment, appointmentReadMode, getSingleAppointment, updateAppointmentMode, resetAppointmentTableMode } = bindActionCreators(actionCreators, dispatch);
     let appointmentData: AppointmentType = appointmentState.appointment ? appointmentState.appointment.appointment.doc : null;
 
 
@@ -33,24 +32,37 @@ const Appointment: React.FC = ()  => {
 
     let query = useQuery();
 
-  
-    // console.log("QUERY", query.get('id'));
-
 
     const handleSubmit  = (values:  AppointmentType) => {
-        let  reqData =  {...values, appointment_time: values.appointment_time.format('LTS'),  appointment_date: values.appointment_date.format('LL'), request_date: values.request_date.format('LL')};
-        // DISPATCH NEW APPOINTMENT EVENT
-        addAppointment(reqData);
-        console.log("DONE ADDED");
+        let  reqData =  {...values, request_date: values.request_date.format('LL')};
+        if(values.appointment_date) {
+            reqData = {...reqData, appointment_date: values.appointment_date.format('LL')}
+        }
+        
+        // values.appointment_date.format('LL')
+        if(appointmentState.formMode == 'new') {
+            addAppointment(reqData);
+            toast.success('Added Appointment Successfuly');
+            setTimeout(() => {
+                navigate('/')
+            },  1000)
+            
+        }else if(appointmentState.formMode == 'edit') {
+            try {
+                updateAppointment(appointmentData.id, reqData);
+                
+                toast.success('Updated Appointment Successfuly');
+               
+                setTimeout(() => {
+                    navigate('/')
+                },  1000)
+            } catch (error) {
+                console.log("ERROR: ",error);
+            }
+        }
     }
 
-    console.log(appointmentState);
-    // if(appointmentData) {
-    //     form.setFieldsValue({
-    //         uniqueCode: appointmentData?.uniqueCode,
-    //         name: appointmentData?.name
-    //     })
-    // }
+
     const handleBack = () => {
         resetAppointmentTableMode();
         navigate('/')
@@ -64,11 +76,7 @@ const Appointment: React.FC = ()  => {
                 getSingleAppointment(id);
             }
             
-            // if(appointmentState.appointment) {
-            //     console.log('ok')
-            //     setAppointmentData(appointmentState.appointment.appointment.doc);
-            // }
-            console.log("UPDATE DATA:", appointmentData);
+         
             if(appointmentData !=  null) {
                 form.setFieldsValue({
                     uniqueCode: appointmentData.uniqueCode,
@@ -77,11 +85,11 @@ const Appointment: React.FC = ()  => {
                     phone: appointmentData.phone,
                     email: appointmentData.email,
                     age: appointmentData.age,
-                    appointment_date: moment(appointmentData.appointment_date),
+                    appointment_date: appointmentData.appointment_date ? moment(appointmentData.appointment_date) : "",
                     first_time:  appointmentData.first_time,
                     request_date: moment(appointmentData.request_date),
                     appointment_status: appointmentData.appointment_status,
-                    appointment_time: moment(appointmentData.appointment_time,  'LLT'),
+                    appointment_time: appointmentData.appointment_time ? moment(appointmentData.appointment_time): "",
                     address:  appointmentData.address,
                     city: appointmentData.city,
                     note_before_appointment:  appointmentData.note_before_appointment,
@@ -89,9 +97,7 @@ const Appointment: React.FC = ()  => {
                 })
             }
         }else {
-            console.log("NOT VIEWING")
-            isViewing = false;
-            console.log(isViewing)
+            resetAppointmentTableMode();
         }
      
     },[appointmentData])
@@ -365,22 +371,28 @@ const Appointment: React.FC = ()  => {
                     </Row>
                 </Row>
 
-                <Row style={{ margin: '15px 50px', }}>
+                <Row style={{ margin: '15px 10px', }}>
                     <Row style={{ width: '100%', justifyContent: 'end'}} >
                     <Col xs={24} sm={24} md={4} lg={2} xl={2}>
                             
                             <Form.Item wrapperCol={{span: 20}}>
-                               {!isViewing ? <Button type='primary' className='submit-button' block htmlType='submit'>
+                               {appointmentState.formMode  == 'new' && <Button type='primary' className='submit-button' block htmlType='submit'>
                                 Save
-                                </Button> :
-                                <Button type='primary' className='submit-button' block htmlType='submit'>
-                                Edit
-                                </Button>}
+                                </Button> }
+                                { appointmentState.formMode  == 'edit'  &&   <Button type='primary'  className='update-button' htmlType='submit' block>
+                                    Save Update
+                                </Button> }
                             </Form.Item>
                             </Col>
                     </Row>
                 </Row>
             </Form>
+            <Row style={{ width: '100%', justifyContent: 'end', paddingRight:  '20px'}} >
+                { appointmentState.formMode  == 'view'  &&   <Button type='primary' onClick={updateAppointmentMode} block  className='edit-button' >
+                    Edit
+                </Button> }
+            </Row>
+            <Toaster />
             </div>
         </div>
     )

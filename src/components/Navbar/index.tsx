@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
                         <Row style={{ marginLeft: '22px'}}>
                             <h3 className='title'>DrNG</h3>
                                 <Divider type="vertical" />
-                            <h3 className='title'>PATIENTS</h3>
+                            <h3 className='title-2'>PATIENTS</h3>
                         </Row>
                     </Col>
                     </Row>

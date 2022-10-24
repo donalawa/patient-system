@@ -51,6 +51,22 @@ export const appointmentReducer =  (
                 loading: false,
                 formMode: 'view'
             }
+        case ActionTypes.UPDATE_APPOINTMENT_REQUEST:
+            return {
+                ...state,
+                loading: true
+            }
+        case ActionTypes.UPDATE_APPOINTMENT:
+            return {
+                ...state,
+                loading: false
+            }
+        case ActionTypes.UPDATE_APPOINTMENT_MODE:
+            return {
+                ...state,
+                loading: false,
+                formMode: 'edit'
+            }
         case ActionTypes.GET_APPOINTMENT_REQUEST:
             return {
                 ...state,

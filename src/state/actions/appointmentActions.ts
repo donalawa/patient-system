@@ -59,9 +59,33 @@ export const getSingleAppointment = (id: string): AppThunk => async(dispatch) =>
     }
 }
 
+export const  updateAppointment = (id: string, data: Appointment): AppThunk => async(dispatch) => {
+
+        dispatch({
+            type: ActionTypes.UPDATE_APPOINTMENT_REQUEST
+        })
+
+        try {
+            const res = await api.patch(`/appointment/${id}`, JSON.stringify(data));
+
+            dispatch({
+                type: ActionTypes.UPDATE_APPOINTMENT
+            })
+        } catch (error) {
+            console.log(error)
+            console.log("Error Updating Appointment")
+        }
+
+   
+}
+
 export const appointmentReadMode = ():AppThunk => (dispatch) => {
     dispatch({type: ActionTypes.APPOINTMENT_READ_MODE});
 }   
+
+export const updateAppointmentMode = ():AppThunk => (dispatch) => {
+    dispatch({type: ActionTypes.UPDATE_APPOINTMENT_MODE})
+}
 
 export const resetAppointmentTableMode = ():AppThunk => (dispatch) => {
     dispatch({type: ActionTypes.RESET_TABLE_MODE});

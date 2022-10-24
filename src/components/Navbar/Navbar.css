@@ -1,5 +1,11 @@
-.title {
+.title,  .title-2 {
     font-weight: bold;
     color: var(--white);
     font-size: 18px;
+}
+
+.title::after {
+    content: '';
+  margin-left: 15px;
+  border-left: 2px solid #fff;
 }

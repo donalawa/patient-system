@@ -1,4 +1,4 @@
-import React, { useEffect,  useState } from 'react'
+import React, { useEffect,  useState, forwardRef, useImperativeHandle } from 'react'
 import {  Table  } from 'antd';
 import { EyeOutlined } from '@ant-design/icons'
 import { bindActionCreators, combineReducers } from 'redux';
@@ -6,41 +6,48 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom'
 import { actionCreators,  State } from '../../state';
 import Appointment from '../../interfaces/AppointmentInterface';
+import moment from 'moment';
 
 
 // type TableProps = {
 //   data: Array<Object>,
 //   loading: boolean
 // }
+type DataTableProps = {
+  searchText: string
+}
 
-const DataTable = () => {
-    // const [gridData, setGridData] = useState([]);
+
+const DataTable = ({searchText}: DataTableProps,   ref: any) => {
+    const [gridData, setGridData] = useState(null);
     // const [loading, setLoading] = useState(false);
     const [sortedInfo, setSortedInfo] = useState<any>({});
-    const [searchText,  setSearchText] = useState("");
+    // const [searchText,  setSearchText] = useState("");
     const [filteredInfo,  setFilteredInfo] = useState<any>({});
     let [filteredData]: any = useState();
     // GETING DATA FORMSTATE
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const stateData:any = useSelector((state: State) => state.appointmentList);
-    const { getAppointments, appointmentReadMode} = bindActionCreators(actionCreators, dispatch)
+    const { getAppointments, appointmentReadMode, getSingleAppointment} = bindActionCreators(actionCreators, dispatch)
 
-    let data = stateData.appointments.docs;
+    let data: any;
     let loading = stateData.loading;
 
-    if(loading == false) {
-      console.log("UPDATE STATE")
-      console.log(data)
-
-      // setGridData(data);
+    try {
+      data = stateData.appointments.docs;
+    } catch (error) {
+      console.log('ERROR GETING DATA')
     }
+
+    
     let appointmentState =  useSelector((state: State) => state.appointment)
-    const handleView = (id: string) => {
-      console.log("ID: ", id);
+
+    const handleView = (data: Appointment) => {
+      // console.log("ID: ", id);
       appointmentReadMode();
-      navigate(`/appointment?id=${id}`);
-    //  console.log("NEW STATE", appointmentState)
+      getSingleAppointment(data.id)
+      navigate(`/appointment?id=${data.id}`);
     }
 
     // handleView();
@@ -49,7 +56,7 @@ const DataTable = () => {
             title: "Name",
             dataIndex: "name",
             editTable: true,
-            sorter:  (a: any,b: any) => a.name.length - b.name.length,
+            sorter:  (a: any,b: any) => a.name.localeCompare(b.name),
             sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
           },
           {
@@ -77,17 +84,17 @@ const DataTable = () => {
                 onFilter: (value: any, record: any) => String(record.age).includes(value)
             },
             {
-              title: "Sex",
+              title: "Gender",
               dataIndex: "gender",
               editTable: true,
-              sorter:  (a: any,b: any) => a.gender - b.gender,
+              sorter:  (a: any,b: any) => a.gender.localeCompare(b.gender),
               sortOrder: sortedInfo.columnKey === 'gender' && sortedInfo.order,
               filters: [
               {text: "Male",  value: "male"},
               {text: "Female",  value: "female"},
               ],
               filteredValue: filteredInfo.gender || null,
-              onFilter: (value: any, record: any) => String(record.gender).includes(value)
+              onFilter: (value: any, record: any) => record.gender  == value
           },
 
             {
@@ -109,30 +116,31 @@ const DataTable = () => {
                 title: "Date Created",
                 dataIndex: "request_date",
                 editTable: true,
-                sorter:  (a: any,b: any) => a.phone.length - b.phone.length,
+                sorter:  (a: any,b: any) => moment(a.request_date).unix() - moment(b.request_date).unix(),
                 sortOrder: sortedInfo.columnKey === 'request_date' && sortedInfo.order,
               },
               {
                 title: "Appointment Date",
                 dataIndex: "appointment_date",
                 editTable: true,
-                sorter:  (a: any,b: any) => a.phone.length - b.phone.length,
-                sortOrder: sortedInfo.columnKey === 'request_date' && sortedInfo.order,
+                sorter:  (a: any,b: any) => moment(a.appointment_date).unix() - moment(b.appointment_date).unix(),
+                sortOrder: sortedInfo.columnKey === 'appointment_date' && sortedInfo.order,
               },
               {
                 title: "Status",
                 dataIndex: "appointment_status",
                 editTable: true,
-                sorter:  (a: any,b: any) => a.status - b.status,
+                sorter:  (a: any,b: any) => a.appointment_status.localeCompare(b.appointment_status),
                 sortOrder: sortedInfo.columnKey === 'appointment_status' && sortedInfo.order,
                 filters: [
-                {text: "passed",  value: "passed"},
+                {text: "success",  value: "success"},
                 {text: "rescheduled",  value: "rescheduled"},
                 {text: "missed",  value: "missed"},
+                {text: "pending",  value: "pending"},
                
                 ],
-                filteredValue: filteredInfo.status || null,
-                onFilter: (value: any, record: any) => String(record.status).includes(value),
+                filteredValue: filteredInfo.appointment_status || null,
+                onFilter: (value: any, record: any) => String(record.appointment_status).includes(value),
                 render:  (tag: any) => {
                   let className = tag == 'success'  ? 'success'  : 'rescheduled';
                   if(tag == "missed") {
@@ -153,57 +161,14 @@ const DataTable = () => {
                 render: (_:any, record: Appointment) =>  {
 
                   return   (
-                        <EyeOutlined onClick={() => handleView(record.id)}/>
+                        <EyeOutlined onClick={() => handleView(record)}/>
                   )
                 }
             },
        
       ];
      
-      // const data:any = [
-      //   {
-      //     key: '1',
-      //     name: 'John Brown',
-      //     age: 32,
-      //     sex: 'male',
-      //     address: 'New York No. 1 Lake Park',
-      //     code: "A109434",
-      //     phone: "676342323",
-      //     status: "passed",
-      //   },
-      //   {
-      //     key: '2',
-      //     name: 'Jim Green',
-      //     age: 42,
-      //     sex: 'female',
-      //     address: 'London No. 1 Lake Park',
-      //     code: "A109434",
-      //     phone: "676342323",
-      //     status: "missed",
-      //   },
-      //   {
-      //     key: '3',
-      //     name: 'Joe Black',
-      //     age: 32,
-      //     sex: 'male',
-      //     address: 'Sidney No. 1 Lake Park',
-      //     code: "A109434",
-      //     phone: "676342323",
-      //     status: "rescheduled",
-      //   },
-      //   {
-      //     key: '4',
-      //     name: 'Jim Red',
-      //     age: 32,
-      //     sex: 'male',
-      //     address: 'London No. 2 Lake Park',
-      //     code: "A109434",
-      //     phone: "676342323",
-      //     status: "passed",
-      //   },
-      // ];
-
-
+   
       const handleChange  = (_:any, filter: any, sorter: any)   => {
         console.log("Sorter", sorter);
         console.log(filter)
@@ -215,47 +180,49 @@ const DataTable = () => {
       
 
       const reset = () => {
-        setSortedInfo({});
-        setFilteredInfo({});
-        setSearchText("");
-        // loadData();
+        getAppointments();
       }
 
 
 
-      const handleInputChange = (e: any) => {
-        setSearchText(e.target.value);
-        if(e.targe.value == "") {
-        //   loadData();
-        }else {
-    
-        }
-      }
+   
 
-      // const globalSearch =  () => {
-      //   filteredData = gridData.filter((value: any) => {
-      //     return (
-      //       value.name.toLowerCase().includes(searchText.toLowerCase()) || 
-      //       value.email.toLowerCase().includes(searchText.toLowerCase())
-      //     )
-      //   });
-      //   setGridData(filteredData);
+      useImperativeHandle(ref , () => ({
+        globalSearch,
+        reset
+      }))
+      const globalSearch =  () => { 
+        console.log("GLOBAL SEARCH")
+        console.log(searchText)
+        filteredData = data.filter((value: Appointment) => {
+          return (
+            value.name.toLowerCase().includes(searchText.toLowerCase()) ||
+            value.phone.includes(searchText.toLowerCase()) ||
+            value.address.toLowerCase().includes(searchText.toLowerCase())
+          )
+        });
+        setGridData(filteredData);
+        // data = filteredData;
+        // console.log(data);
     
-      // }
+      }
 
 
       useEffect(()  => {
-          getAppointments();
-      }, [])
+          if(!gridData) {
+            getAppointments();
+          }
+          setGridData(data);
+      }, [data])
 
     return (
         <>
             <div className='table-container'>
-              <Table rowClassName="table-row" rowKey="id" columns={columns} loading={loading} dataSource={filteredData && filteredData.length ? filteredData : data} onChange={handleChange} />
+              <Table rowClassName="table-row" rowKey="id" columns={columns} loading={loading} dataSource={filteredData && filteredData.length ? filteredData : gridData} onChange={handleChange} />
             </div>
           
         </>
     )
 }
-
-export default DataTable;
+ 
+export default forwardRef(DataTable);

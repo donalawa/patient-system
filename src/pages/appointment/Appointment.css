@@ -27,6 +27,22 @@
     background-color: var(--btnRed) !important;
     border-width: 0 !important;
     border-radius: 5px !important;
+    width: auto  !important;
+}
+
+.update-button {
+    background-color: var(--orange) !important;
+    border-width: 0 !important;
+    border-radius: 5px !important;
+    width: auto  !important;
+}
+
+.edit-button {
+    background-color: var(--btnRed) !important;
+    border-width: 0 !important;
+    border-radius: 5px !important;
+    width: auto  !important;
+    
 }
 
 @media screen and (max-width: 420px) {
