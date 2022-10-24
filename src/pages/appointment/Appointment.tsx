@@ -38,7 +38,7 @@ const Appointment: React.FC = ()  => {
         if(values.appointment_date) {
             reqData = {...reqData, appointment_date: values.appointment_date.format('LL')}
         }
-        
+
         // values.appointment_date.format('LL')
         if(appointmentState.formMode == 'new') {
             addAppointment(reqData);
@@ -131,9 +131,9 @@ const Appointment: React.FC = ()  => {
                             {
                                 whitespace: true
                             },
-                            { min: 3 }
+                            { min: 8, message: "PIN must follow format A[SN][DD][MM][YY]" }
                             ]}
-                            hasFeedback
+                            hasFeedback 
                             >
                             <Input disabled={isViewing} />
                             </Form.Item>
