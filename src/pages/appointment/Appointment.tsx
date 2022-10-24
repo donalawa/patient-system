@@ -254,7 +254,7 @@ const Appointment: React.FC = ()  => {
                             
                         <Col xs={24} sm={24} md={11} lg={5} xl={5}>
                             <Form.Item  name="appointment_status" rules={[{ required: true, message: "Select Status"}]} label="Appointment Status">
-                                <Select disabled={isViewing} placeholder='Select your gender' > 
+                                <Select disabled={isViewing} placeholder='Select appointment status' > 
                                     <Select.Option value="pending">Pending</Select.Option>
                                     <Select.Option value="missed">Missed</Select.Option>
                                     <Select.Option value="rescheduled">Rescheduled</Select.Option>
