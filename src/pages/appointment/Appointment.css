@@ -28,6 +28,7 @@
     border-width: 0 !important;
     border-radius: 5px !important;
     width: auto  !important;
+    margin-bottom: 10px;
 }
 
 .update-button {
@@ -35,6 +36,7 @@
     border-width: 0 !important;
     border-radius: 5px !important;
     width: auto  !important;
+    margin-bottom: 10px;
 }
 
 .edit-button {
@@ -42,6 +44,7 @@
     border-width: 0 !important;
     border-radius: 5px !important;
     width: auto  !important;
+    margin-bottom: 10px;
     
 }
 
@@ -50,3 +53,16 @@
         margin: 0px 10px !important;
     }
 }
+
+@media screen and (max-width: 767px) {
+    .submit-button, .update-button {
+        margin-left: 40px;
+    }
+}
+
+@media screen and (max-width: 991px){
+    .edit-button {
+        margin-right: 40px !important;
+    }
+}
+
