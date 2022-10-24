@@ -146,7 +146,7 @@ const Appointment: React.FC = ()  => {
                             rules={[
                             {
                                 required: true,
-                                message: "Please enter  a unique code"
+                                message: "Please enter  patients name"
                             },
                             {
                                 whitespace: true
@@ -175,7 +175,7 @@ const Appointment: React.FC = ()  => {
                             rules={[
                             {
                                 required: true,
-                                message: "Please enter  a unique code"
+                                message: "Please enter patients phone"
                             },
                             {
                                 whitespace: true
