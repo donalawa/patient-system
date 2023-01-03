@@ -1,7 +1,7 @@
 import  { create } from 'apisauce';
 
 const apiUrlTest  = 'http://localhost:8080';
-const  apiUrlLive  =  'https://patient-appointments-api.herokuapp.com/';
+const  apiUrlLive  =  'patient-backend.vercel.app/';
 
 const api =  create({
     baseURL: apiUrlLive,
